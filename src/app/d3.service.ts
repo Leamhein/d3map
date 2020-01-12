@@ -20,8 +20,8 @@ export class D3Service {
   }
 
   private getData() {
-    const mapUrl = 'http://enjalot.github.io/wwsd/data/world/world-110m.geojson';
-    const dataUrl = 'http://enjalot.github.io/wwsd/data/world/ne_50m_populated_places_simple.geojson';
+    const mapUrl = './assets/world-110m.geojson';
+    const dataUrl = './assets/ne_50m_populated_places_simple.geojson';
 
     return combineLatest([
       this.http.get(mapUrl),
