@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
 })
 export class D3Service {
 
-  private svgSelectrion;
+  private svgSelection;
   private projection;
   private data$;
 
@@ -40,11 +40,20 @@ export class D3Service {
   }
 
   private drawMap(mapData): void {
-    this.svgSelectrion = d3.select('svg.map');
-    this.projection = d3.geoEqualEarth().rotate([90, 0, 0]);
+    this.svgSelection = d3.select('svg.map');
+    this.projection = d3.geoEqualEarth()
+      .rotate([90, 0, 0]);
+
+    const svgWidth = this.svgSelection.style('width').slice(0, -2);
+    const svgHeight = this.svgSelection.style('height').slice(0, -2);
     const path = d3.geoPath().projection(this.projection);
 
-    this.svgSelectrion.append('path')
+    this.svgSelection
+      .attr('preserveAspectRatio', 'xMinYMin meet')
+      .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+
+    this.projection.fitSize([svgWidth, svgHeight], mapData);
+    this.svgSelection.append('path')
       .attr('d', path(mapData))
       .attr('fill', 'lightgray')
       .attr('stroke', 'gray');
@@ -62,7 +71,7 @@ export class D3Service {
       .style('padding', '5px')
       .style('position', 'absolute');
 
-    this.svgSelectrion.selectAll('circle')
+    this.svgSelection.selectAll('circle')
       .data(chartData.features)
       .enter()
       .append('circle')
