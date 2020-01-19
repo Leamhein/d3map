@@ -47,10 +47,17 @@ export class D3Service {
     const svgWidth = this.svgSelection.style('width').slice(0, -2);
     const svgHeight = this.svgSelection.style('height').slice(0, -2);
     const path = d3.geoPath().projection(this.projection);
+    const zoom = d3.zoom()
+    .scaleExtent([0.2, 8])
+    .on('zoom', () => {
+      this.svgSelection.selectAll(['path', 'circle'])
+        .attr('transform', d3.event.transform);
+    });
 
     this.svgSelection
       .attr('preserveAspectRatio', 'xMinYMin meet')
-      .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+      .attr('viewBox', `0 0 ${svgWidth} ${svgHeight}`)
+      .call(zoom);
 
     this.projection.fitSize([svgWidth, svgHeight], mapData);
     this.svgSelection.append('path')
@@ -60,7 +67,7 @@ export class D3Service {
   }
 
   private drawCharts(chartData) {
-    const tooltip = d3.select('.wrapper')
+    const tooltip = d3.select('.mapWrapper')
       .append('div')
       .style('opacity', 0)
       .attr('class', 'tooltip')
@@ -102,9 +109,9 @@ export class D3Service {
         const city = d.properties.name;
         const country = d.properties.sov0name;
         tooltip
-        .html(`${country}, ${city}`)
-        .style('left', (d3.mouse(this)[0] + 30) + 'px')
-        .style('top', (d3.mouse(this)[1]) + 'px');
+          .html(`${country}, ${city}`)
+          .style('left', (d3.mouse(this)[0] + 30) + 'px')
+          .style('top', (d3.mouse(this)[1]) + 'px');
       })
       .on('mouseout', function() {
         tooltip
